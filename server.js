@@ -8,10 +8,13 @@ const courseRoute = require("./routes").course;
 const passport = require("passport");
 require("./config/passport")(passport);
 const cors = require("cors");
+const path = require("path");
+// process.env.Port由HEROKU自行動態設定
+const port = process.env.Port || 8080;
 
 // 連結MongoDB
 mongoose
-  .connect("mongodb://127.0.0.1/mernDB")
+  .connect(process.env.MONGODB_CONNECTION)
   .then(() => {
     console.log("連結到mongodb...");
   })
@@ -23,6 +26,7 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(express.static(path.join(__dirname, "client", "bulid")));
 
 app.use("/api/user", authRoute);
 // course route應該被jwt保護
@@ -33,7 +37,11 @@ app.use(
   courseRoute
 );
 
-app.listen(8080, () => {
+if (process.env.NODE.ENV === "production" || process.env.NODE.ENV === "staging") {
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", index.html));
+  });
+};
+app.listen(port, () => {
   console.log("後端伺服器聆聽在port 8080...");
 });
-
