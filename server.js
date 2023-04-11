@@ -10,7 +10,7 @@ require("./config/passport")(passport);
 const cors = require("cors");
 const path = require("path");
 // process.env.Port由HEROKU自行動態設定
-const port = process.env.Port || 8080;
+const port = process.env.PORT || 8080;
 
 // 連結MongoDB
 mongoose
